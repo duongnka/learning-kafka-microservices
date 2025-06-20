@@ -1,0 +1,25 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: microservices_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - kafka-network
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - kafka-network
