@@ -1,0 +1,26 @@
+# Main docker-compose file that serves as an entry point
+# This imports all other compose files
+
+# Usage:
+# Start all services:
+#   docker-compose up -d
+#
+# Start only Kafka and database services:
+#   docker-compose up -d kafka postgres redis kafka-ui
+#
+# Start specific service:
+#   docker-compose up -d order-service
+
+# Import all services from separate compose files
+# Networks and volumes are defined in the base file
+name: kafka-microservices
+
+include:
+  - ./docker/docker-compose.base.yml
+  - ./docker/kafka/docker-compose.kafka.yml
+  - ./docker/database/docker-compose.database.yml
+  - ./docker/services/docker-compose.order-service.yml
+  - ./docker/services/docker-compose.payment-service.yml
+  - ./docker/services/docker-compose.inventory-service.yml
+  - ./docker/services/docker-compose.notification-service.yml
+

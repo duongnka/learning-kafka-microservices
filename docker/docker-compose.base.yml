@@ -1,0 +1,11 @@
+# This is the base compose file that defines networks and volumes
+# Use it with docker-compose -f docker-compose.yml -f docker/kafka/docker-compose.yml -f ... up
+
+networks:
+  kafka-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  kafka_data:
+    driver: local
