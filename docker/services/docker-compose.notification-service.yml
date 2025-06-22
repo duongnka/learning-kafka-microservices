@@ -1,0 +1,20 @@
+services:
+  # Notification Service
+  notification-service:
+    build: ../../services/notification-service
+    container_name: notification-service
+    ports:
+      - "8004:8000"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - DATABASE_URL=postgresql://admin:password123@postgres:5432/microservices_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - kafka
+      - postgres
+      - redis
+    networks:
+      - kafka-network
+    volumes:
+      - ../../services/notification-service:/app
+      - ../../shared:/app/shared
