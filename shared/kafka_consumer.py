@@ -82,12 +82,7 @@ class KafkaMessageConsumer:
             self.connect()
         
         self.running = True
-        self.logger.info("Starting Kafka message consumption...")
-        
-        # Set up signal handlers for graceful shutdown
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        
+        self.logger.info("Starting Kafka message consumption...")        
         try:
             while self.running:
                 try:
@@ -118,7 +113,7 @@ class KafkaMessageConsumer:
             self.consumer.close()
             self.logger.info("Kafka consumer connection closed")
     
-    def _signal_handler(self, signum, frame):
+    def signal_handler(self, signum, frame):
         """Handle shutdown signals"""
         self.logger.info(f"Received signal {signum}, shutting down gracefully...")
         self.stop_consuming()

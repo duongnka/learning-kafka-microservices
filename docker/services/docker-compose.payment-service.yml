@@ -1,0 +1,20 @@
+services:
+  # Payment Service
+  payment-service:
+    build: ../../services/payment-service
+    container_name: payment-service
+    ports:
+      - "8002:8000"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - DATABASE_URL=postgresql://admin:password123@postgres:5432/microservices_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - kafka
+      - postgres
+      - redis
+    networks:
+      - kafka-network
+    volumes:
+      - ../../services/payment-service:/app
+      - ../../shared:/app/shared
