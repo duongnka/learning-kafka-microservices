@@ -56,7 +56,7 @@ start_service() {
   fi
   
   echo -e "${GREEN}Starting $1 service...${NC}"
-  docker-compose up -d $1
+  docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d $1
   echo -e "${GREEN}Service $1 started.${NC}"
 }
 

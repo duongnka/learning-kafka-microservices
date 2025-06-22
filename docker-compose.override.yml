@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  order-service:
+    ports:
+      - "${ORDER_SERVICE_PORT:-8001}:8000"
+  payment-service:
+    ports:
+      - "${PAYMENT_SERVICE_PORT:-8002}:8000"
+  inventory-service:
+    ports:
+      - "${INVENTORY_SERVICE_PORT:-8003}:8000"
+  notification-service:
+    ports:
+      - "${NOTIFICATION_SERVICE_PORT:-8004}:8000"

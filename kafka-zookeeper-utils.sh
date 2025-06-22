@@ -1,6 +1,21 @@
 #!/bin/bash
 
+# Load environment variables from .env if it exists
+if [ -f .env ]; then
+    set -a
+    source .env
+    set +a
+fi
+
 # Zookeeper-based Kafka Management Utilities
+
+# Load service ports from environment or use defaults
+ORDER_SERVICE_PORT=${ORDER_SERVICE_PORT:-8001}
+PAYMENT_SERVICE_PORT=${PAYMENT_SERVICE_PORT:-8002}
+INVENTORY_SERVICE_PORT=${INVENTORY_SERVICE_PORT:-8003}
+NOTIFICATION_SERVICE_PORT=${NOTIFICATION_SERVICE_PORT:-8004}
+KAFKA_PORT=${KAFKA_PORT:-9092}
+ZOOKEEPER_PORT=${ZOOKEEPER_PORT:-2181}
 
 echo "🚀 Kafka Zookeeper Management Utilities"
 echo "===================================="
@@ -8,14 +23,14 @@ echo "===================================="
 case "$1" in
     "cluster-info")
         echo "📊 Kafka Cluster Information:"
-        docker exec kafka kafka-cluster cluster-id --bootstrap-server localhost:9092
+        docker exec kafka kafka-cluster cluster-id --bootstrap-server localhost:$KAFKA_PORT
         echo ""
-        docker exec kafka kafka-broker-api-versions --bootstrap-server localhost:9092
+        docker exec kafka kafka-broker-api-versions --bootstrap-server localhost:$KAFKA_PORT
         ;;
         
     "zk-info")
         echo "🔍 Zookeeper Information:"
-        docker exec zookeeper zookeeper-shell localhost:2181 ls /brokers/ids
+        docker exec zookeeper zookeeper-shell localhost:$ZOOKEEPER_PORT ls /brokers/ids
         ;;
         
     "zk-reset")
@@ -34,7 +49,7 @@ case "$1" in
         
     "topic-list")
         echo "📋 Kafka Topics:"
-        docker exec kafka kafka-topics --bootstrap-server localhost:9092 --list
+        docker exec kafka kafka-topics --bootstrap-server localhost:$KAFKA_PORT --list
         ;;
         
     "topic-create")
@@ -49,7 +64,7 @@ case "$1" in
         REPLICATION=${4:-1}
         
         echo "🔧 Creating topic: $TOPIC_NAME (Partitions: $PARTITIONS, Replication: $REPLICATION)"
-        docker exec kafka kafka-topics --create --bootstrap-server localhost:9092 --topic "$TOPIC_NAME" --partitions "$PARTITIONS" --replication-factor "$REPLICATION"
+        docker exec kafka kafka-topics --create --bootstrap-server localhost:$KAFKA_PORT --topic "$TOPIC_NAME" --partitions "$PARTITIONS" --replication-factor "$REPLICATION"
         ;;
         
     "topic-delete")
@@ -62,7 +77,7 @@ case "$1" in
         TOPIC_NAME=$2
         
         echo "🗑️  Deleting topic: $TOPIC_NAME"
-        docker exec kafka kafka-topics --delete --bootstrap-server localhost:9092 --topic "$TOPIC_NAME"
+        docker exec kafka kafka-topics --delete --bootstrap-server localhost:$KAFKA_PORT --topic "$TOPIC_NAME"
         ;;
         
     "topic-describe")
@@ -75,12 +90,12 @@ case "$1" in
         TOPIC_NAME=$2
         
         echo "🔍 Describing topic: $TOPIC_NAME"
-        docker exec kafka kafka-topics --describe --bootstrap-server localhost:9092 --topic "$TOPIC_NAME"
+        docker exec kafka kafka-topics --describe --bootstrap-server localhost:$KAFKA_PORT --topic "$TOPIC_NAME"
         ;;
         
     "consumer-groups")
         echo "👥 Consumer Groups:"
-        docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 --list
+        docker exec kafka kafka-consumer-groups --bootstrap-server localhost:$KAFKA_PORT --list
         ;;
         
     "consumer-group-describe")
@@ -93,7 +108,7 @@ case "$1" in
         GROUP_ID=$2
         
         echo "🔍 Describing Consumer Group: $GROUP_ID"
-        docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group "$GROUP_ID"
+        docker exec kafka kafka-consumer-groups --bootstrap-server localhost:$KAFKA_PORT --describe --group "$GROUP_ID"
         ;;
         
     "produce")
@@ -107,7 +122,7 @@ case "$1" in
         
         echo "📤 Starting producer for topic: $TOPIC_NAME"
         echo "Type messages and press Enter. Press Ctrl+C to exit."
-        docker exec -it kafka kafka-console-producer --bootstrap-server localhost:9092 --topic "$TOPIC_NAME"
+        docker exec -it kafka kafka-console-producer --bootstrap-server localhost:$KAFKA_PORT --topic "$TOPIC_NAME"
         ;;
         
     "consume")
@@ -126,7 +141,7 @@ case "$1" in
         
         echo "📥 Starting consumer for topic: $TOPIC_NAME $FROM_BEGINNING"
         echo "Press Ctrl+C to exit."
-        docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic "$TOPIC_NAME" $FROM_BEGINNING
+        docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:$KAFKA_PORT --topic "$TOPIC_NAME" $FROM_BEGINNING
         ;;
         
     *)
